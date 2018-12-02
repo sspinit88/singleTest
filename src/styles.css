@@ -1,0 +1,94 @@
+/* You can add global styles to this file, and also import other style files */
+@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "../node_modules/bootstrap/dist/css/bootstrap-grid.min.css";
+@import "../node_modules/bootstrap/dist/css/bootstrap-reboot.min.css";
+
+body {
+
+}
+
+.auth-container {
+    width: 350px;
+    text-align: center;
+}
+
+.auth-container h1 {
+    font-size: 20px !important;
+}
+
+.has-errors {
+    color: red;
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 100%;
+    max-width: 100%;
+}
+
+.header {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(195, 199, 199, 0.82);
+}
+
+.sidebar {
+    background: #acb0af;
+}
+
+.brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+.metismenu {
+    display: flex;
+    justify-content: space-around;
+}
+
+.metismenu li.active {
+    color: white;
+}
+
+.profile {
+    list-style: none;
+}
+
+.dashboard-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dropdown.open > .dropdown-menu.profile-dropdown-menu {
+    display: block;
+}
+
+.card.stats{
+    width: 640px;
+}
+
+.row{
+    margin: 0 auto !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 640px;
+}
+
+.fdc{
+    display: flex;
+    flex-direction: column;
+}
+
+.card{
+    width: 640px;
+}
+
+
