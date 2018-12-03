@@ -91,4 +91,8 @@ body {
     width: 640px;
 }
 
+.card-360{
+    width: 360px !important;
+}
+
 

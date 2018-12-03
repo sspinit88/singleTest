@@ -12,9 +12,11 @@ import {RecordsComponent} from './records/records.component';
 import {HeaderComponent} from './shared/components/header/header.component';
 import {SidebarComponent} from './shared/components/sidebar/sidebar.component';
 import {DropdownDirective} from './shared/directives/Dropdown.directive';
-import { AddEventComponent } from './records/add-event/add-event.component';
-import { AddCategoryComponent } from './records/add-category/add-category.component';
-import { EditCategoryComponent } from './records/edit-category/edit-category.component';
+import {AddEventComponent} from './records/add-event/add-event.component';
+import {AddCategoryComponent} from './records/add-category/add-category.component';
+import {EditCategoryComponent} from './records/edit-category/edit-category.component';
+import {CategoriesService} from './shared/services/categories.service';
+import {EventsService} from './shared/services/events.service';
 
 @NgModule({
     declarations: [
@@ -36,7 +38,10 @@ import { EditCategoryComponent } from './records/edit-category/edit-category.com
         SystemRoutingModule
     ],
     exports: [],
-    providers: []
+    providers: [
+        CategoriesService,
+        EventsService
+    ]
 })
 
 export class SystemModule {
