@@ -1,10 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
 
-import {Category} from '../../../shared/models/category.model';
-import {appEvent} from '../../../shared/models/event.model';
 import * as moment from 'moment';
+
+import {Category} from '../../../shared/models/category.model';
 import {EventsService} from '../../shared/services/events.service';
+import {AEvent} from '../../../shared/models/event.model';
+import {Bill} from '../../../shared/models/bill.model';
+import {BillService} from '../../shared/services/bill.service';
 
 @Component({
     selector: 'app-add-event',
@@ -27,7 +30,8 @@ export class AddEventComponent implements OnInit {
     ];
 
     constructor(
-        private eventsService: EventsService
+        private eventsService: EventsService,
+        private billService: BillService
     ) {
     }
 
@@ -43,11 +47,13 @@ export class AddEventComponent implements OnInit {
             type
         } = form.value;
 
+        // не допустимы отрицательные числа
         if (amount < 0) {
             amount *= -1;
         }
 
-        const appEvent = new appEvent(
+        // не забыть подключить moment.js
+        const event = new AEvent(
             type,
             amount,
             +category,
@@ -55,8 +61,8 @@ export class AddEventComponent implements OnInit {
             description
         );
 
-        this.eventsService.addEvent(appEvent)
-            .subscribe(() => {
+        this.eventsService.addEvent(event)
+            .subscribe((bill: Bill) => {
 
             });
     }

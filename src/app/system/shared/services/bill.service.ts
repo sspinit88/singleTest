@@ -3,22 +3,21 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
-import {AEvent} from '../../../shared/models/event.model';
-
 @Injectable()
 
-export class EventsService {
+export class BillService {
     constructor(
-        private http: HttpClient
+        public http: HttpClient
     ) {
     }
 
-    addEvent(event: AEvent): Observable<any> {
-        return this.http.post('http://localhost:3004/events', event)
+    getBill(): Observable<any> {
+        return this.http.get('http://localhost:3004/bill')
             .pipe(
                 map((response) => {
                     return response;
                 })
             );
     }
+
 }

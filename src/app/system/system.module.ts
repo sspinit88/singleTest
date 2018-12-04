@@ -17,6 +17,7 @@ import {AddCategoryComponent} from './records/add-category/add-category.componen
 import {EditCategoryComponent} from './records/edit-category/edit-category.component';
 import {CategoriesService} from './shared/services/categories.service';
 import {EventsService} from './shared/services/events.service';
+import {BillService} from './shared/services/bill.service';
 
 @NgModule({
     declarations: [
@@ -35,12 +36,13 @@ import {EventsService} from './shared/services/events.service';
     imports: [
         CommonModule,
         SharedModule,
-        SystemRoutingModule
+        SystemRoutingModule,
     ],
     exports: [],
     providers: [
         CategoriesService,
-        EventsService
+        EventsService,
+        BillService
     ]
 })
 

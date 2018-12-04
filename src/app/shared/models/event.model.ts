@@ -1,4 +1,4 @@
-export class appEvent {
+export class AEvent {
     constructor(
         public type: string,
         public amount: number,
