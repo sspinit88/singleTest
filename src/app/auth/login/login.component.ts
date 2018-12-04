@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
                 private router: Router,
                 private activatedRoute: ActivatedRoute,
                 private authService: AuthService
-               ) {
+    ) {
     }
 
     ngOnInit() {
@@ -36,6 +36,8 @@ export class LoginComponent implements OnInit {
             .subscribe((params: Params) => {
                     if (params['canLogin']) {
                         this.showMessage('success', 'Вы можите войти в систему под своим логином и паролем.');
+                    } else if (params['accessDenied']) {
+                        this.showMessage('danger', 'Для входа в систему введите логин и пароль.');
                     }
                 }
             );
@@ -68,7 +70,6 @@ export class LoginComponent implements OnInit {
                     this.showMessage('danger', 'Пользователь не зарегистрирован!');
                 }
             });
-
     }
 
 }
