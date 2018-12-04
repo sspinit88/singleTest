@@ -21,4 +21,13 @@ export class EventsService {
                 })
             );
     }
+
+    getEvents(): Observable<any> {
+        return this.http.get('http://localhost:3004/events')
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
 }

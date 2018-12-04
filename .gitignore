@@ -3,7 +3,6 @@
 opening/
 ready/
 
-*.txt
 package-lock.json
 
 preimg/

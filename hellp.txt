@@ -1,0 +1,1059 @@
+/*---------------*/
+/*--1-init-auth--*/
+/*---------------*/
+
+Проект условно состоит из двух глобальных частей (авторизационная и системная).
+В app cоздаем 3и папки: 2е под каждую из в/у частей и одну общую (shared).
+
+В shared будут храниться все общие сущности, необходимые для работы всего приложения (защитники, сервисы, директивы и т
+.д.)
+
+Создаем сущность system.module.ts в папке system и оставляем пустым (пока).
+
+Создаем сущность auth.module.ts в папке auth:
+- создаем и экспортируем класс AuthModule;
+- @NgModule, импортируем его.
+
+Блок авторизации делится на два: login + registration.
+Создадим компоненты login + registration средствами ng.
+
+В auth.module.ts автоматически будут внесены все необходимые данные по созданным компонентам
+(импортированны и задекларированны).
+!-Импортируем CommonModule, несущий в себе базовый функционал ng.
+
+!-Импортируем auth.module.ts - AuthModule в корневой модуль AppModule.
+
+Создаем auth.component.ts:
+- проиписываем и импортируем @Component({}), в нем прописываем селектор и адрес к темплету html;
+- создаем и экспортируем класс AuthComponent;
+- декларируем и импортируем в auth.module.ts;
+
+
+
+
+/*-------------------------------*/
+/*--2-add-routers-template-auth--*/
+/*-------------------------------*/
+
+Добавление Роутов, подключение шаблонов.
+
+В app.component.html пропишим <router-outlet></router-outlet>, в зависимости от адреса стр автоматически будет меняться
+шаблон.
+
+Создаем app-routing.module.ts, который будет отвечаеть за корневые роуты всего приложения:
+- создаем и экспортируем AppRoutingModule;
+- подключаем @NgModule()
+
+-создаем переменную routes (тип Routs), которая принимает массив из объектов, каждый из которых соответствует одному из
+интерфейсов приложения.
+
+/*-----
+const routes: Routes = [
+    {
+        // при вводе адреса приложения будет проводиться редирект на стр логина
+        path: '', redirectTo: 'login', pathMatch: 'full'
+    }
+];
+
+@NgModule({
+    // импортируем роуты
+    imports: [
+        RouterModule.forRoot(routes)
+    ],
+    exports: [
+        RouterModule
+    ]
+})
+-----*/
+
+!-Далее импортируем AppRoutingModule в app.module.ts.
+
+Далее, в папке auth создаем auth-routing.module.ts и делаем все теже действия, что и ранее, с небольшим изменением
+
+/*-----
+const routes: Routes = [
+    {
+        // указываем родительский компонент, через который будут обращаться к его детям при введении того или иного
+        // адреса
+        path: '',
+        component: AuthComponent, children: [
+            {
+                path: 'login',
+                component: LoginComponent
+            },
+            {
+                path: 'registration',
+                component: RegistrationComponent
+            }
+        ]
+    }
+];
+
+@NgModule({
+    imports: [
+        RouterModule.forChild(routes)
+    ],
+    exports: [
+        RouterModule
+    ],
+})
+-----*/
+
+Переносим верстку по темплетам.
+
+Теперь в auth.component.ts в конструкторе регистрируем private router: Router.
+В методе ngOnInit делаем программный переход на login-component, без этого внетреннее содержимое формы login не будет
+отображаться.
+
+/*-----
+export class AuthComponent implements OnInit {
+
+    constructor(
+        private router: Router
+    ) {
+    }
+
+
+    ngOnInit() {
+    //делаем программный переход на login-component
+        this.router.navigate(['/login']);
+    }
+}
+-----*/
+
+
+
+
+/*-------------------------------*/
+/*--    3-login-validation     --*/
+/*-------------------------------*/
+
+Для валидирования форм используем реактивный подход.
+
+Важно, что бы были импортированны FormsModule и ReactiveFormsModule.
+Для лучшей производительности подключать (импортировать) в/у модули лучше в shared.module.ts.
+!-Важно экспортировать подключенные модули, что бы можно было их использовать из вне.
+
+!-Не забудь подключить SharedModule в AppModule.
+
+Для получения доступа к возможностям SharedModule подключаем его в AuthModule.
+
+Теперь можно перейти к работе с темплетом и login.component.ts
+
+Создадим поле form: FormGroup;
+
+В ngOnInit() инициализируем форму.
+
+/*-----
+ngOnInit() {
+        // обращаемся к форме и говорим, что она будет наследником FormGroup
+        this.form = new FormGroup({
+            // передаем начальное значание, равное null; Передаем валидаторы.
+            'email': new FormControl(null, [Validators.required, Validators.email]),
+            'password': new FormControl(null, [Validators.required, Validators.minLength(6)]),
+        });
+    }
+-----*/
+
+В html форме прописываем [formGroup]="form" и (ngSubmit)="onSubmit()".
+Добавляем каждому из 2х инпутов formControlName="(тут имя)" - привязываем контролы формы.
+
+Теперь можно заняться валидацией каждого поля.
+
+Валидация email:
+
+В темплете, внутри блока с инпутом, вставим:
+(по аналогии и для пароля, более точно смотри в темплете)
+
+/*-----
+<span class="form-help-text"
+              // блок с текстом ошибки будет появляться при выполнении условия
+              // через get() обращаемся к валидируемому полю
+              *ngIf="form.get('email').invalid && form.get('email').touched">
+            <span *ngIf="form.get('email')['errors']['required']">
+                Поле должно быть заполнено!
+            </span>
+            <span *ngIf="form.get('email')['errors']['email']">
+                Данные введены неверно!
+            </span>
+        </span>
+----*/
+
+
+
+
+/*-------------------------------*/
+/*-- 4-login-data-acquisition  --*/
+/*-------------------------------*/
+
+Получение данных с сервера + авторизация пользователя.
+
+В shared создаем папку service, в которой будут находиться общие сервисы.
+Сервис необходимо зарегистрировать в корневом модуле ().
+
+Создаем файл user.service.ts:
+- создаем и экспортируем класс UserService;
+- включаем декоратор @Injectable();
+
+/*-----
+    // в конструкторе подключаем http объект, тип  HttpClient
+    constructor(
+        private http: HttpClient
+    ){}
+-----*/
+
+Для удобства в работе создадим общедоступную модель юзера (shared -> models -> user.model.ts):
+
+/*-----
+export class User {
+    constructor(
+        public email: string,
+        public password: string,
+        public name: string,
+        public id?: number
+    ){}
+}
+----*/
+
+В сервисе создаем метод для получения данных пользователя по email.
+
+/*-----
+    // метод будет возвращать Observable<User>, где User - тип по ранее созданной модели.
+    getUserByEmail(email: string): Observable<User> {
+        return this.http.get(`http://localhost:3000/users?email=${email}`)
+            .pipe(
+                map((response) => {
+                    return response;
+                }),
+                // если есть , то вернет 0 эл, иначе вернет  undefined
+                map((user: User) => user[0] ? user[0] : undefined)
+            );
+    }
+-----/*
+
+Теперь, воспользуемся методом getUserByEmail() в методе onSubmit().
+
+Для этого подключим сервис в конструкторе класса LoginComponent:
+/*-----
+    constructor(
+        private userService: UserService
+    ) {
+    }
+-----*/
+
+Создадим модель сообщения, которое будет появляться при возникновении ошибки.
+(shared -> models -> message.model.ts)
+
+/*-----
+    export class Message {
+        constructor(
+            public type: string,
+            public text: string
+        ){}
+    }
+-----*/
+
+В темплете, перед формой вставим div:
+/*-----
+    // сообщение будет выводиться, если есть текст ошибки
+    <div class="alert alert-{{message.type}}"
+        *ngIf="message.text">
+        {{message.text}}
+    </div>
+-----*/
+
+В login.component.ts создаем поле 'message: Message;'.
+
+Создадим метод, отвечающий за показ сообщения:
+/*-----
+    private showMessage(type: string = 'danger', text: string) {
+        // создаем новый объект сообщения
+        this.message = new Message(type, text);
+        // что бы ошибка не висела все время, уберем ее по истечении определенного времени
+        window.setTimeout(() => {
+            this.message.text = '';
+        },5000)
+    }
+-----*/
+
+!- В ngOnInit необходимо проинициализировать message, т.е. прописать 'this.message = new Message('danger', '');'
+
+Переходим к методу onSubmit:
+/*----
+onSubmit() {
+        // получем введеные данные из формы
+        const formData = this.form.value;
+
+        // передаем email
+        this.userService.getUserByEmail(formData.email)
+        // подписываемся на стрим
+            .subscribe((user: User) => {
+                // делаем проверку
+                if (user) {
+                    if (user.password === formData.password) {
+                        // действуем
+                    } else {
+                        // введен не верный пароль
+                        this.showMessage('danger', 'Введен не верный пароль!')
+                    }
+                } else {
+                    // пользователь не зарегистрирован
+                    this.showMessage('danger', 'Пользователя не зарегистрирован!')
+                }
+            });
+    }
+----*/
+
+Далее пропишим логику по авторизации пользователя.
+
+Для этой цели создадим в папке с сервисами новый сервис auth.service.ts:
+/*-----
+export class AuthService {
+
+    // поле, отвечающее за стостояние авторизации
+    private isAuthenticated = false;
+
+    login() {
+        this.isAuthenticated = true;
+    }
+
+    logout() {
+        this.isAuthenticated = false;
+        window.localStorage.clear();
+    }
+
+    // проверяет состояние поля isAuthenticated,
+    // так как оно приватное, то мы его не сможем получить из других классов
+    // именно для этого и будет использоваться данный метод
+    isLoggedIn(): boolean {
+        return this.isAuthenticated;
+    }
+}
+-----*/
+
+В конструкторе LoginComponent подключаем только что созданный сервис:
+/*-----
+    constructor(
+        private userService: UserService,
+    ->  private authService: AuthService,
+
+    // в последствии нужно будет делать редирект на другую стр,
+        private router: Router
+    ) {
+    }
+-----*/
+
+Добавляем код в метод onSubmit():
+/*-----
+   onSubmit() {
+        // получем введеные данные из формы
+        const formData = this.form.value;
+
+        // передаем email
+        this.userService.getUserByEmail(formData.email)
+        // подписываемся на стрим
+            .subscribe((user: User) => {
+                // делаем проверку
+                if (user) {
+                    if (user.password === formData.password) {
+                        // обнуляем ошибки, если есть
+                        this.message.text = '';
+                        // в localStorage кладем объект юзера.
+                        // setItem принимает только строку, что бы преобразовать объект в строку
+                        // воспользуемся JSON.stringify()
+                        window.localStorage.setItem('user', JSON.stringify(user));
+                        this.authService.login();
+                        // в последствии нужно будет делать редирект на другую стр,
+                        // this.router.navigate(['/system', 'bill']);
+                    } else {
+                        // введен не верный пароль
+                        // в ngOnInit еобходимо проинициализировать message, т.е.
+                        // прописать 'this.message = new Message('danger', '');'
+                        this.showMessage('danger', 'Введен не верный пароль!')
+                    }
+                } else {
+                    // пользователь не зарегистрирован
+                    this.showMessage('danger', 'Пользователя не зарегистрирован!')
+                }
+            });
+    }
+-----*/
+
+
+
+
+/*-------------------------------*/
+/*--    5-registration-page    --*/
+/*-------------------------------*/
+
+Реализуем валидацию, после чего переходим к реализации метода по отправке формы:
+/*-----
+onSubmit() {
+        // при сабмите получаем данные
+        const {email, password, name} = this.form.value;
+        // так как нам нужно передать данные в виде user, то создаем новый объект User
+        const user = new User(email, password, name);
+        // передаем объект - user
+        this.userSevice.createNewUser(user)
+            .subscribe(() => {
+                //после регистрации перенаправляем на страницу авторизации
+                // вторым параметром передаем объект с полем queryParams
+                this.router.navigate(['/login'], {
+                    queryParams: {
+                        nowCanLogin: true
+                    }
+
+                });
+            });
+    }
+-----*/
+
+Что бы воспользоваться методом createNewUser(), в сервисе UserService, реализуем данный метод:
+/*-----
+createNewUser(user: User): Observable<User> {
+        return this.http.post('http://localhost:3000/users', user)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+-----*/
+
+Для того, чтобы после регистрации и перехода на страницу авторизации появилась приветствующее сообщение, необходимо в
+конструкторе LoginComponent:
+/*-----
+   constructor(
+        private userService: UserService,
+        private authService: AuthService,
+        private router: Router,
+   ->   private activatedRoute: ActivatedRoute
+    ) {
+    }
+-----*/
+
+Далее, в LoginComponent, в ngOnInit() подписываемся на получение параметров:
+/*-----
+this.activatedRoute.queryParams
+            .subscribe((params: Params) => {
+                    if (params['nowCanLogin']) {
+                        this.showMessage('success', 'Вы можите войти в систему под своим логином и паролем.')
+                    }
+                }
+            );
+-----*/
+
+Теперь, после регистрации нового пользователя и перехода на страницу авторизации появится надпись 'Вы можите войти в систему под своим логином и паролем.'
+
+
+Далее создадим валидатор, позволяющий предотвратить повторную регистрацию пользователя. Отсев по email.
+
+/*-----
+// для проверки наличия зарегистрированного пользователя с веденным email
+    forbiddenEmails(control: FormControl): Promise<any> {
+        return new Promise((res, rej) => {
+            // control.value - текущее значение input'a
+            this.userSevice.getUserByEmail(control.value)
+                .subscribe((user: User) => {
+                    if(user){
+                        // если пользователь с введенным email уже есть
+                        // передаем ключ 'forbiddenEmail: true', по которому будем делать валидации
+                        res({forbiddenEmail: true});
+                    } else {
+                        // если пользователя с введенным email нет
+                        res(null);
+                    }
+                });
+        });
+    }
+-----*/
+
+Передадим асинхронный валидатор в поле валидации 'email'.
+/*-----
+ngOnInit() {
+        this.form = new FormGroup({
+            'email': new FormControl(null, [Validators.required, Validators.email], this.forbiddenEmails.bind(this)),
+-----*/
+
+!- Так как контекст теряется, то передаем this через .bind()
+
+
+
+
+/*-------------------------------*/
+/*--       6-init-system       --*/
+/*-------------------------------*/
+
+Переходим в app.module.ts
+
+Cоздаем:
+/*-----
+import {NgModule} from "@angular/core";
+import {CommonModule} from "@angular/common";
+import {SharedModule} from "../shared/shared.module";
+
+@NgModule({
+    imports: [
+        CommonModule,
+        SharedModule
+    ],
+    exports: [
+
+    ]
+})
+
+export class SystemModule {
+
+}
+-----*/
+
+
+По аналогии с ранее созданными ...-routing.module.ts
+
+Переносим верстку в темплеты.
+
+В system создаем папку shared, в ней папку components, в которой будут храниться темплеты html общие для всех страниц
+системы.
+
+
+
+
+/*-------------------------------*/
+/*--         7-sidebar         --*/
+/*-------------------------------*/
+
+В sidebar.component.html:
+- добавил [routerLink]="['/system', 'records']" и т.д.
+- добавил активацию работающей ссылки через routerLinkActive="active".
+
+В login.component.ts:
+- добавляем (снуть коммент) с "this.router.navigate(['/system', 'bill']);" в методе onSubmit().
+
+
+
+
+/*-------------------------------*/
+/*--          8-header         --*/
+/*-------------------------------*/
+
+Займемся выведением актуальной даты в header.
+
+В слассе HeaderComponent создадаем поле " date: Date = new Date; ",
+теперь в date хранится стандартная js-дата и ее нужно вывести в шаблоне.
+Воспользуемся пайпом, что бы отобразить дату в нужном для нас формате: "{{date | date:'dd.MM.yyyy'}}".
+
+Поработаем с выпадающим списком.
+
+В system/shared создаем папку directive, в ней dropdown.directive.ts.
+
+При клике должен появляться класс, при повторном клике - убирать класс.
+
+В dropdown.directive.ts:
+
+/*-----
+    @Directive({
+        selector: '[appDropdown]'
+    })
+
+    export class DropdownDirective {
+        // создаем флаг
+
+        isOpen = false;
+
+        // будем слушать класс 'open', которого по умолчанию не будет
+        // HostBinding позволяет связать обычное свойство класса со свойством элемента, к которому применяется директива.
+
+        @HostBinding('class.open') isOpen = 'false';
+
+        // Декоратор @HostListener позволяет связать события DOM и методы директивы.
+        // при клике значение в this.isOpen будет меняться на противоположное.
+
+        @HostListener('click') onClick() {
+            this.isOpen = !this.isOpen
+        }
+
+        // далее декларируем директиву в system.module.ts
+    }
+------*/
+
+Для получения имени пользователя ссоздадим новую переменную user c типом User.
+Далее работаем в ngOnInit:
+/*-----
+    ngOnInit() {
+        // обращаемся через localStorage к объекту user, которому ранее мы дали в localStorage имя 'user'
+        // так как пока получаем данные в виде строки, то обернем в метод JSON.parse() - получим объект.
+
+        this.user = JSON.parse(window.localStorage.getItem('user'));
+    }
+------*
+
+Далее нужно реализовать метод onLogout():
+/*-----
+    onLogout() {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+    }
+-----*/
+
+
+
+
+/*-------------------------------*/
+/*--         9-baseApi         --*/
+/*-------------------------------*/
+
+Для оптимизации кода создадим сущность, которая будет обращаться к серверу.
+Это позволит не прописывать каждый раз код по обращению к серверу.
+
+В app/shared создаем папку core с файлом base-api.ts:
+/*-----
+@Injectable()
+
+export class BaseApi {
+
+    private baseUrl = 'http://localhost:3000/';
+
+    constructor(
+        private http: HttpClient
+    ) {
+    }
+
+    private getURL(url: string = ''): string {
+        return this.baseUrl + url;
+    }
+
+    // реализуем метод
+    public get(url: string = ''): Observable<any> {
+        return this.http.get(this.getURL(url))
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+    // реализуем метод
+    public post(url: string = '', data: any = {}): Observable<any> {
+        return this.http.post(this.getURL(url), data)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+    // реализуем метод
+    public put(url: string = '', data: any = {}): Observable<any> {
+        return this.http.put(this.getURL(url), data)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+}
+-----*/
+
+Далее меняем код в user.service.ts
+
+
+
+
+/*-------------------------------*/
+/*--      10-records-page       --*/
+/*-------------------------------*/
+
+Разбиваем на компоненты.
+
+Создаем модель Category.
+
+Работаем с add-category.component.html.
+
+!- Шаблонный подход.
+
+В теге форм создаем локальную референцию и указываю, что это ngForm.
+Тамже перехватываем отправку формы - (ngSubmit)="onSubmit(f)";
+
+В компоненете, в методе onSubmit() принимаем form c типом NgForm.
+
+В первом инпуте (ввод названия) создаем локальную референцию #name='ngModel', передадим ей ngModel, что бы получить
+данный контрол, добавим required - валидация на обязательное заполнение.
+Для того, что бы ангуляр понимал, что input нужно обрабатывать как элемент данной формы, добавим ngModel.
+
+!- Обязательно должен быть указан атрибут 'name', пусть совпадает с именем локальной референции.
+
+Во втором инпуте (ввод лимита) все точно также + добавляем валидатор "min='1'", так как вводимое значение не может быть
+меньше нуля.
+
+Заменяем ngModel на [ngModel]="1" - дефолтно будет выводиться в инпуте "1", далее прописываем *ngIf.
+
+В shared/service создадим category.service.ts, в котором:
+/*-----
+@Injectable()
+
+export class CategoryService extends BaseApi {
+
+    constructor(
+        private http: HttpClient
+    ) {
+        super(http);
+    }
+
+    // реализуем метод сервиса по добавлению категории
+    addCategory(category: Category): Observable<Category> {
+       return this.post('categories', category);
+    }
+}
+-----*/
+
+!- Регистрируем CategoryService в SystemModule.
+
+В AddCategoryComponent:
+/*-----
+    // создаем переменную, через которую удем обновлять данные в полях других темплетов
+    @Output() onCategoryAdd = new EventEmitter<Category>();
+
+    onSubmit(form: NgForm) {
+        const {name, capacity} = form.value;
+
+        if (capacity < 0) {
+            capacity *= -1;
+        }
+
+        const category = new Category(name, capacity);
+
+        this.catigiriesServise.addCategory(category)
+            .subscribe((category: Category) => {
+                // очистим форму поле отправки данных
+                form.reset();
+                // что бы после очистки формы высвечивалось дефолтное значение обратимся к методу patchValue().
+                form.form.patchValue({capacity: 1});
+                // обращаемся к объекту новой категории
+                this.onCategoryAdd.emit(category);
+            });
+    }
+-----*/
+
+Переходим в корневую стр records-page.component.html.
+
+Теперь у <app-add-event></app-add-event> есть колбек.
+
+<app-add-event (onCategoryAdd)="newCategoryAdded($event)"></app-add-event>,
+
+где
+    onCategoryAdd - коллбек, в который передается коллбек newCategoryAdded($event),
+    $event - данные, которые эммитим.
+    (onCategoryAdd) - передает данные из дочернего компонента.
+    newCategoryAdded() - удет обрабатываться в родителе.
+
+После подготовки edit-category.component.html переходим в CategoryService и добавляем новый метод, отвечающий за
+получение данных с сервера:
+/*-----
+    // реализуем метод по получению данных
+    getCategories(): Observable<Category> {
+        return this.get('categories');
+    }
+-----*/
+
+Возвращаемся в RecordsPageComponent.
+
+Инициализируем в конструкторе CategoryService.
+
+Создаем categories: Category[] = [];
+Создаем isLoaded = false; (флаг, который бедет переключаться по загрузке категорий),
+проверку на загрузку компонентов ставить в родительском html на секцию.
+
+В CategoriesService напишим метод для получения имеющихся на сервере категорий:
+/*-----
+getCategories(): Observable<Category> {
+        return this.http.get(`http://localhost:3004/categories`)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+-----*/
+
+В методе ngOnInit() будем получать категории для селекта:
+
+/*-----
+ngOnInit() {
+        this.categoriesServices.getCategories()
+            .subscribe((categories: Category[]) => {
+                this.categories = categories;
+                this.isLoaded = true;
+            })
+    }
+-----*/
+
+Теперь реализуем логику по добавлению категории в массив данных:
+/*-----
+    newCategoryAdded(category: Category) {
+        this.categories.push(category);
+    }
+-----*/
+
+Перхлдим в родительский html:
+' <app-edit-category [categories]="categories"></app-edit-category> ',
+если массив categories будет меняться в корневом компоненте, то будет изменяться и в дочерних.
+
+Переходим в EditCategoryComponent.
+
+Тут будем принимать массив categorie:
+/*-----
+@Input() categories: Category[];
+-----*/
+
+Если будет редактироваться категория, то нужно уведомить родительский компонент об этих изменениях:
+/*-----
+@Output() editCategory = new EventEmitter<Category>()
+-----*/
+
+Далее нужно обеспечить вывод данных в инпутах блока по редактированию категории в зависимости от выбранной категории.
+
+Для этого нужно отслеживать какая категория является текущей теущая.
+
+С этой целью создадим приватное поле: 'private currentCategoryId = 1;' - это переменная, служащая для отслеживания
+текущей выбранной категории.
+
+В select передаем '[(ngModel)]="currentCategoryId"' , что позволит отслеживать изменения в select.
+
+В тот же select повесим событие (change), в который передадим обработчик: '(change)="onCategoryChange()',
+
+Переходим в EditCategoryComponent и описываем только что созданный метод onCategoryChange().
+
+Для начала создадим 'currentCategory: Category;' - будет содержать данные текущей выбранной модели.
+
+/*-----
+    onCategoryChange() {
+        this.currentCategory = this.categories
+            .find(category => category.id === +this.currentCategoryId);
+    }
+-----*/
+
+В методе ngOnInit() проводим инициализацию onCategoryChange().
+
+В html-шаблоне, в input прописывем '[ngModel]="currentCategory.name"'
+
+В CategoriesService:
+/*-----
+editCategory(category: Category): Observable<any> {
+        return this.http.put(`http://localhost:3004/categories/${category.id}`, category)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+-----*/
+
+Теперь можно проработать передачу данных формы и emit в родительский компонент:
+/*-----
+    onSubmit(form: NgForm) {
+        let {name, capacity} = form.value;
+
+        if (capacity < 0) {
+            capacity *= -1;
+        }
+
+        let category = new Category(name, capacity, +this.currentCategoryId);
+
+        this.categoriesService.editCategory(category)
+            .subscribe(() => {
+               this.editCategory.emit(category);
+            });
+    }
+-----*/
+
+Реализуем вывод сообщения о том, что внесены изменения в категорию по аналогии с ранее написанным кодом (см. login).
+
+
+Переходим в RecordsComponent:
+/*-----
+    categoriesWasEdited(category: Category) {
+        // находим переданную переменную в массиве по id и меняем ее
+        const idx = this.categories
+            .findIndex(c => c.id === category.id);
+        this.categories[idx] = category;
+    }
+-----*/
+
+Подготовка add-event.component.html.
+
+В компонент импортируем массив categories.
+
+Заводим массив из объектов types (для радио-кнопок "доход - расход").
+Подставляем соответственно в темплет.
+
+Реализуем функционал кнопки отправки формы - onSubmit():
+(Не забудь создать метод для вывода message)
+/*-----
+onSubmit(form: NgForm) {
+        let {
+            amount,
+            description,
+            category,
+            type
+        } = form.value;
+
+        // не допустимы отрицательные числа
+        if (amount < 0) {
+            amount *= -1;
+        }
+
+        // не забыть подключить moment.js
+        const event = new AEvent(
+            type,
+            amount,
+            +category,
+            moment().format('DD.MM.YYYY HH.mm.ss'),
+            description
+        );
+
+
+        // получаем денежный счет
+        this.billService.getBill()
+            .subscribe((bill: Bill) => {
+                let value = 0;
+
+                // если был расход, то надо проверить, хватает ли средств для совершения события
+
+                if (type === 'outcome') {
+                    if (amount > bill.value) {
+                        // нельзя потратить больше, чем есть на счете
+
+                        this.message = new Message('danger', `Недостаточно средств! Вам не хватает: ${amount - bill.value}`);
+                        return;
+                    } else {
+                        // вычитаем из счета величину затрат
+
+                        value = bill.value - amount;
+                    }
+                } else {
+                    // если доход, то складываем значения
+
+                    value = bill.value + amount;
+                }
+                // в результате в/у действий получаем счет, который нужно обновить
+                // создаем новый метод по обновлению счета в bill.service.ts
+
+                this.billService.updateBill({value: value, currency: bill.currency})
+
+                // нужно добавить в подписку this.eventsService.addEvent(event)
+                // для того, что бы не писать два раза .subscribe() воспользуемся
+                // методом margeMap
+
+                    .pipe(
+                        mergeMap(() => this.eventsService.addEvent(event))
+                    )
+                    .subscribe(() => {
+                        // теперь нужно обнулить значения в форме, вместо метода .reset() воспользуемся setValue(), в нем укажем
+                        // значения нужных нам полей.
+
+                        form.setValue({
+                            amount: 0,
+                            description: ' ',
+                            category: 1,
+                            type: 'outcome'
+                        });
+                    });
+            });
+    }
+-----*/
+
+
+
+
+/*--------------------------------*/
+/*--      11-planning-page      --*/
+/*--------------------------------*/
+
+В конструкторе PlanningComponent подключаем сервисы:
+/*-----
+constructor(
+        private billService: BillService,
+        private categoriesService: CategoriesService,
+        private eventService: EventsService
+    ) {
+    }
+-----*/
+
+В EventsService необходимо нужно создать метод, который будет получать все имеющиеся в базе события (по get-запросы,
+стандартно).
+
+В PlanningComponent создаем флаг 'isLoaded = false', который защитит от преждевременной загрузки шаблона. Заносим по
+условию в темплет.
+
+Т.к. у нас будет 3и разных запроса к серверу, которые нужно синхронизировать, то воспользуемся методом combineLatest
+библиотеки rxjs:
+/*-----
+    sub1: Subscription;
+
+    ngOnInit() {
+            this.sub1 = combineLatest(
+                this.billService.getBill(),
+                this.categoriesService.getCategories(),
+                this.eventService.getEvents()
+            ).subscribe((data: [Bill, Category[], AEvent[]]) => {
+                this.bill = data[0];
+                this.categories = data[1];
+                this.events = data[2];
+
+                this.isLoaded = true;
+            });
+        }
+
+        ngOnDestroy() {
+            // отписываемся от события
+            if (this.sub1) {
+                this.sub1.unsubscribe();
+            }
+        }
+-----*/
+
+Далее заносим данные в шаблон.
+
+Создадим метод getCategoryCost(), в котором нужной пройти по массиву всех существующих в базе эвентов, понять какие
+эвенты относятся к категории, приходящей к методу:
+/*-----
+getCategoryCost(category): any {
+        const categoryEvents = this.events
+            .filter(event => event.category === category.id && event.type === 'outcome');
+
+        return categoryEvents.reduce((total, event) => {
+            total += event.amount;
+            return total;
+        }, 0);
+    }
+-----*/
+
+Напишим метод, который будет отдавать кол-во % от имеющегося кол средств на категорию:
+/*----
+ private getPercent(category: Category): any {
+        const percent = (100 * this.getCategoryCost(category)) / category.capacity;
+        return percent > 100 ? 100 : percent;
+    }
+
+    getCategoryPercent(category: Category): string {
+        return this.getPercent(category) + '%';
+    }
+----*/
+
+Метод по назначению цвета в зависимости от % расхода:
+/*----
+    getCategoryColorClass(category: Category): string {
+        const percent = this.getPercent(category);
+        const className = percent < 60 ? 'success' : percent >= 100 ? 'danger' : 'warning';
+        return className;
+    }-
+----*/
+
+
+
+/*--------------------------------*/
+/*--       12-history-page      --*/
+/*--------------------------------*/
+
+Создаем дополнительные компоненты.
+
+
+
