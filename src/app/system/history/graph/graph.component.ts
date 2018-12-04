@@ -1,15 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'app-graph',
-  templateUrl: './graph.component.html',
-  styleUrls: ['./graph.component.css']
+    selector: 'app-graph',
+    templateUrl: './graph.component.html',
+    styleUrls: ['./graph.component.css']
 })
 export class GraphComponent implements OnInit {
 
-  constructor() { }
+    @Input() data;
+    // data = [
+    //     {
+    //         'name': 'ONE',
+    //         'value': '321654'
+    //     },
+    //     {
+    //         'name': 'TWO',
+    //         'value': '753654'
+    //     },
+    //     {
+    //         'name': 'THREE',
+    //         'value': '654654'
+    //     }
+    // ];
 
-  ngOnInit() {
-  }
+    constructor() {
+    }
+
+    ngOnInit() {
+    }
 
 }

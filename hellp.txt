@@ -1055,5 +1055,100 @@ getCategoryCost(category): any {
 
 Создаем дополнительные компоненты.
 
+Описывать как подключить график не буде. См. видео.
+
+Переходим в HistoryComponent, получение данных проводим по аналогии с п.11. через combineLatest().
+
+/*-----
+export class EventsComponent implements OnInit {
+
+    @Input() categories: Category[] = [];
+    @Input() events: AEvent[] = [];
+
+    constructor() {
+    }
+
+    ngOnInit() {
+        this.events.forEach((e) => {
+            e.catName = this.categories.find(c => c.id === e.category).name;
+        });
+    }
+
+    getClassName(e) {
+        return {
+            'label': true,
+            'label-danger-e': e.type === 'outcome',
+            'label-success-e': e.type === 'income'
+        }
+    }
+
+}
+-----*/
+
+Подготовим пункты выпадающего меню поиска на странице истрии
+/*-----
+   <div class="dropdown-menu">
+       <a class="dropdown-item" (click)="changeCriteria('amount')">Сумма</a>
+       <a class="dropdown-item" (click)="changeCriteria('date')">Дата</a>
+       <a class="dropdown-item" (click)="changeCriteria('category')">Категория</a>
+       <a class="dropdown-item" (click)="changeCriteria('type')">Тип</a>
+   </div>
+-----*/
+
+changeCriteria() - событие, как параметр передаем название поля.
+
+В темплете, в input поиска вносим '[(ngModel)]="searchValue"'.
+
+В компоненте: 'searchValue = '';',
+
+/*-----
+changeCriteria(fieldType: string) {
+        // создаем карту имен
+        const namesMap = {
+            amount: 'Сумма',
+            date: 'Дата',
+            category: 'Категория',
+            type: 'Тип'
+        };
+        // в зависимости от поля будем задавать placeholder'у определенное значение
+        this.searchPlaceholder = namesMap[fieldType];
+        // указываем какое поле актуально для поиска
+        this.searchFieldType = fieldType;
+    }
+-----*/
+
+Для организации поиска используем pipe:
+/*-----
+    export class SearchPipe implements PipeTransform {
+        transform(items: any, value: string, field: string): any {
+            if (items.length === 0 || !value) {
+                return items;
+            }
+            return items.filter((item) => {
+                // делаем глубокую копию объекта с помощью .assign()
+                const t = Object.assign({}, item);
+                // проверяем евляется ли числом то, что передали в функцию
+                if (!isNaN(t[field])) {
+                    t[field] += '';
+                }
+                // для фильтрации по типу
+                if (field === 'type') {
+                    t[field] = t[field] === 'outcome' ? 'расход' : 'доход';
+                }
+                // для фильтрации по категории
+                if (field === 'category') {
+                    t[field] = t['catName'];
+                }
+
+                return t[field].toLowerCase().indexOf(value.toLowerCase()) !== -1;
+            });
+        }
+    }
+-----*/
+
+
+
+
+!- Реализуем открытие каждого из событи.
 
 

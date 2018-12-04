@@ -1,5 +1,7 @@
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
     declarations: [],
@@ -9,9 +11,12 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     ],
     exports: [
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        NgxChartsModule,
+        BrowserAnimationsModule
     ],
     providers: [
+        NgxChartsModule
     ]
 })
 

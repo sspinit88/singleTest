@@ -14,7 +14,7 @@
     }
   ],
   "bill": {
-    "value": 88372,
+    "value": 87718,
     "currency": "RUB"
   },
   "categories": [
@@ -111,46 +111,6 @@
       "date": "04.12.2018 12.26.59",
       "description": "доход в тест2",
       "id": 9
-    },
-    {
-      "type": "outcome",
-      "amount": 700,
-      "category": 1,
-      "date": "04.12.2018 12.27.49",
-      "description": "расход тест2 ",
-      "id": 10
-    },
-    {
-      "type": "outcome",
-      "amount": 700,
-      "category": 4,
-      "date": "04.12.2018 12.27.59",
-      "description": " расход",
-      "id": 11
-    },
-    {
-      "type": "outcome",
-      "amount": 1213,
-      "category": 2,
-      "date": "04.12.2018 12.43.15",
-      "description": "1",
-      "id": 12
-    },
-    {
-      "type": "outcome",
-      "amount": 10000,
-      "category": 2,
-      "date": "04.12.2018 12.43.40",
-      "description": "расход",
-      "id": 13
-    },
-    {
-      "type": "income",
-      "amount": 3000,
-      "category": 2,
-      "date": "04.12.2018 12.43.55",
-      "description": "+3000",
-      "id": 14
     }
   ]
 }

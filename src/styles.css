@@ -102,7 +102,7 @@ body {
     width: 600px;
 }
 
-.success {
+.success, .label-success-e {
     background: green;
 }
 
@@ -110,9 +110,16 @@ body {
     background: yellow;
 }
 
-.warning {
+.warning, .label-danger-e {
     background: red;
 }
 
 
+.btn-group.open .dropdown-menu{
+    display: block;
+}
+
+.title {
+    text-align: center;
+}
 

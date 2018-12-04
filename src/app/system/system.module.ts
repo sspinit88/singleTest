@@ -18,6 +18,9 @@ import {EditCategoryComponent} from './records/edit-category/edit-category.compo
 import {CategoriesService} from './shared/services/categories.service';
 import {EventsService} from './shared/services/events.service';
 import {BillService} from './shared/services/bill.service';
+import {GraphComponent} from './history/graph/graph.component';
+import {EventsComponent} from './history/events/events.component';
+import {SearchPipe} from './shared/pipe/search.pipe';
 
 @NgModule({
     declarations: [
@@ -31,7 +34,10 @@ import {BillService} from './shared/services/bill.service';
         DropdownDirective,
         AddEventComponent,
         AddCategoryComponent,
-        EditCategoryComponent
+        EditCategoryComponent,
+        GraphComponent,
+        EventsComponent,
+        SearchPipe
     ],
     imports: [
         CommonModule,
