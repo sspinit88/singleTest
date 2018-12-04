@@ -6,6 +6,9 @@
             </div>
         </div>
         <div class="card-block">
+            <span class="alert-{{message.type}}">
+                {{message.text}}
+            </span>
             <form #form="ngForm" (ngSubmit)="onSubmit(form)">
                 <div class="form-group">
                     <label class="control-label"
@@ -38,7 +41,7 @@
                                    [value]="t.type"
                                    required
                                    [ngModel]="'outcome'"
-                            >
+                                >
                             <span>{{t.label}}</span>
                         </label>
                     </div>
