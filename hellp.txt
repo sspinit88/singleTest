@@ -1147,8 +1147,93 @@ changeCriteria(fieldType: string) {
 -----*/
 
 
-
-
 !- Реализуем открытие каждого из событи.
+
+
+
+
+/*--------------------------------*/
+/*--        ХХ-auth-guard       --*/
+/*--------------------------------*/
+
+Организуем защиту роутов.
+
+В src/app/shared/services создаем новый auth.guard.ts:
+/*-----
+
+@Injectable()
+
+// имплементируемся
+//  canActivate и canActivateChild - методы, которые говорят ангуляру можно ли загружать определенный модуль или роут
+
+// !- обязательно подключи в модуле, в провайдерах.
+
+export class AuthGuard implements CanActivate, CanActivateChild {
+
+    // инжектим AuthService и роутер
+
+    constructor(
+        private authService: AuthService,
+        private router: Router
+    ) {
+    }
+
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+        if (this.authService.isLogged()) {
+            // если пользователь залогинен, то допускаем к внетренней части
+
+            return true;
+        } else {  // иначе делаем редирект на страницу логина, и выводим соответствующее сообщение
+            this.router.navigate(['/login'], {
+                queryParams: {
+                    accessDenied: true
+                }
+            });
+            return false;
+        }
+    }
+
+    canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+        return this.canActivate(childRoute, state);
+    }
+}
+-----*/
+
+В в компоненте логина добавляем:
+
+/*-----
+this.activatedRoute.queryParams
+            .subscribe((params: Params) => {
+                    if (params['canLogin']) {
+                        this.showMessage('success', 'Вы можите войти в систему под своим логином и паролем.');
+            ->      } else if (params['accessDenied']) {
+            ->          this.showMessage('danger', 'Для входа в систему введите логин и пароль.');
+                    }
+                }
+            );
+-----*/
+
+Далее переходим в system-routing.module.ts и добваляем 'canActivate: [AuthGuard]':
+
+/*-----
+const routes: Routes = [
+    {
+    ->  path: 'system', component: SystemComponent, canActivate: [AuthGuard], children: [
+            {
+                path: 'bill', component: BillComponent
+            },
+             ...
+-----*/
+
+
+
+
+/*--------------------------------*/
+/*--           ХХ-404           --*/
+/*--------------------------------*/
+
+
+
+
 
 

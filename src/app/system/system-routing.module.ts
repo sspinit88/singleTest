@@ -8,7 +8,6 @@ import {PlanningComponent} from './planning/planning.component';
 import {RecordsComponent} from './records/records.component';
 import {AuthGuard} from '../shared/services/auth.guard';
 
-
 const routes: Routes = [
     {
         path: 'system', component: SystemComponent, canActivate: [AuthGuard], children: [
