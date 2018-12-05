@@ -13,7 +13,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
         FormsModule,
         ReactiveFormsModule,
         NgxChartsModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
     ],
     providers: [
         NgxChartsModule

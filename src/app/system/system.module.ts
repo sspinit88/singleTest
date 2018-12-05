@@ -21,6 +21,7 @@ import {BillService} from './shared/services/bill.service';
 import {GraphComponent} from './history/graph/graph.component';
 import {EventsComponent} from './history/events/events.component';
 import {SearchPipe} from './shared/pipe/search.pipe';
+import {NotFoundComponent} from '../shared/components/not-found/not-found.component';
 
 @NgModule({
     declarations: [
@@ -37,14 +38,17 @@ import {SearchPipe} from './shared/pipe/search.pipe';
         EditCategoryComponent,
         GraphComponent,
         EventsComponent,
-        SearchPipe
+        SearchPipe,
+        NotFoundComponent
     ],
     imports: [
         CommonModule,
         SharedModule,
         SystemRoutingModule,
     ],
-    exports: [],
+    exports: [
+        NotFoundComponent
+    ],
     providers: [
         CategoriesService,
         EventsService,

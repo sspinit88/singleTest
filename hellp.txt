@@ -1232,8 +1232,26 @@ const routes: Routes = [
 /*--           ХХ-404           --*/
 /*--------------------------------*/
 
+В src/app/shared/components генерируем новый компонент 'not-found', декларируем новый компонент в system.module
+.ts.
 
+Нужно отметить, что по идее импортировать нужно было бы в app.module и путь прописывать в system-routing.module,
+однако такой вариант превел к тому, что перехватываются все адреса связанные с system.
 
+Еще одним рабочим вариантом оказался случай, когда декларировал в app.module, а прописывал пути в system-routing.module.
 
+Далее NotFoundComponent необходимо обработать в system-routing.module.ts:
+/*-----
+
+const routes: Routes = [
+    {
+        path: '', redirectTo: 'login', pathMatch: 'full'
+    },
+ -> {
+ ->    path: '**', component: NotFoundComponent
+ -> }
+];
+
+-----*/
 
 
