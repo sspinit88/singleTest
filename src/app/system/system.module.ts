@@ -46,9 +46,7 @@ import {NotFoundComponent} from '../shared/components/not-found/not-found.compon
         SharedModule,
         SystemRoutingModule,
     ],
-    exports: [
-        NotFoundComponent
-    ],
+    exports: [],
     providers: [
         CategoriesService,
         EventsService,
