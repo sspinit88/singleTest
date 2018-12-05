@@ -40,4 +40,13 @@ export class CategoriesService {
             );
     }
 
+    getCategoryById(id): Observable<any> {
+        return this.http.get(`http://localhost:3004/categories/${id}`)
+            .pipe(
+                map((response) => {
+                    return response;
+                })
+            );
+    }
+
 }

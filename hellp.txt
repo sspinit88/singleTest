@@ -1149,6 +1149,85 @@ changeCriteria(fieldType: string) {
 
 !- Реализуем открытие каждого из событи.
 
+В SystemRoutingModule , в routes добавляем:
+/*-----
+       ...,
+       {
+         path: 'history/:id', component: DetailComponent
+       }
+    ]
+-----*/
+
+Т.о. обеспечили переход на страницу при клике на ссылку (cм. верстку history -> events).
+
+В EventsService рефлизуем метод получения данных по id:
+/*-----
+    getEventById(id: string): Observable<any> {
+            return this.http.get(`http://localhost:3004/events/${id}`)
+                .pipe(
+                    map((response) => response)
+                );
+        }
+-----*/
+
+В CategoriesService реализуем новый метод по получению категории используя id:
+/*-----
+     getCategoryById(id: string): Observable<any> {
+            return this.http.get(`http://localhost:3004/categories/${id}`)
+                .pipe(
+                    map((response) => {
+                        return response;
+                    })
+                );
+        }
+-----*/
+
+В DetailComponent :
+/*-----
+export class DetailComponent implements OnInit, OnDestroy {
+
+    event: AEvent;
+    category: Category;
+    isLoaded = false;
+    sub: Subscription;
+
+    constructor(
+        private route: ActivatedRoute,
+        private eventsService: EventsService,
+        private categoriesService: CategoriesService
+    ) {
+    }
+
+    ngOnInit() {
+        // с помощью стрима получаем id страницы в коде
+        // по id получим все данные, которые нужно отобразить на странице.
+        this.sub = this.route.params
+            .pipe(
+                mergeMap((params: Params) => this.eventsService.getEventById(params['id'])),
+                // получаем event и присваиваем его переменной event
+                mergeMap((event: AEvent) => {
+                    // получаем новый стрим
+                    this.event = event;
+                    return this.categoriesService.getCategoryById(event.category);
+                })
+            )
+            // подписываемсяи получаем объект с данными
+           .subscribe((category: Category) => {
+               this.category = category;
+               this.isLoaded = true;
+           });
+    }
+
+    ngOnDestroy() {
+        if (this.sub) {
+            this.sub.unsubscribe();
+        }
+    }
+
+}
+-----*/
+
+
 
 
 
@@ -1225,6 +1304,8 @@ const routes: Routes = [
              ...
 -----*/
 
+Далее заполняем темплет.
+
 
 
 
@@ -1256,8 +1337,11 @@ const routes: Routes = [
 
 
 
+
+???
 /*--------------------------------*/
 /*--    xx-Ленивая загрузка     --*/
 /*--------------------------------*/
 
+???
 Переходим в app-routing.module и добавляем еще один объект:

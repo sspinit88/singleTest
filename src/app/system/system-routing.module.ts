@@ -9,6 +9,7 @@ import {RecordsComponent} from './records/records.component';
 import {AuthGuard} from '../shared/services/auth.guard';
 
 import {NotFoundComponent} from '../shared/components/not-found/not-found.component';
+import {DetailComponent} from './history/detail/detail.component';
 
 const routes: Routes = [
     {
@@ -24,6 +25,9 @@ const routes: Routes = [
             },
             {
                 path: 'records', component: RecordsComponent
+            },
+            {
+                path: 'history/:id', component: DetailComponent
             }
         ]
     },

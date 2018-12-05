@@ -30,4 +30,11 @@ export class EventsService {
                 })
             );
     }
+
+    getEventById(id: string): Observable<any> {
+        return this.http.get(`http://localhost:3004/events/${id}`)
+            .pipe(
+                map((response) => response)
+            );
+    }
 }

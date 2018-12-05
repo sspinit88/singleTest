@@ -22,6 +22,7 @@ import {GraphComponent} from './history/graph/graph.component';
 import {EventsComponent} from './history/events/events.component';
 import {SearchPipe} from './shared/pipe/search.pipe';
 import {NotFoundComponent} from '../shared/components/not-found/not-found.component';
+import { DetailComponent } from './history/detail/detail.component';
 
 @NgModule({
     declarations: [
@@ -39,7 +40,8 @@ import {NotFoundComponent} from '../shared/components/not-found/not-found.compon
         GraphComponent,
         EventsComponent,
         SearchPipe,
-        NotFoundComponent
+        NotFoundComponent,
+        DetailComponent
     ],
     imports: [
         CommonModule,
