@@ -14,7 +14,7 @@
     }
   ],
   "bill": {
-    "value": 87718,
+    "value": 86218,
     "currency": "RUB"
   },
   "categories": [
@@ -111,6 +111,14 @@
       "date": "04.12.2018 12.26.59",
       "description": "доход в тест2",
       "id": 9
+    },
+    {
+      "type": "outcome",
+      "amount": 1500,
+      "category": 4,
+      "date": "05.12.2018 16.48.31",
+      "description": "test",
+      "id": 10
     }
   ]
 }

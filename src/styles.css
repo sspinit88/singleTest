@@ -114,12 +114,15 @@ body {
     background: red;
 }
 
-
-.btn-group.open .dropdown-menu{
+.btn-group.open .dropdown-menu {
     display: block;
 }
 
 .title {
     text-align: center;
+}
+
+.metismenu li.active a {
+    color: #fff;
 }
 

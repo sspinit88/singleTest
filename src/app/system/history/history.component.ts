@@ -13,13 +13,13 @@ import {AEvent} from '../../shared/models/event.model';
 })
 export class HistoryComponent implements OnInit, OnDestroy {
 
-    sub: Subscription;
-
     constructor(
         private categoriesService: CategoriesService,
         private eventsService: EventsService
     ) {
     }
+
+    sub: Subscription;
 
     categories: Category[] = [];
     events: AEvent[] = [];
@@ -27,6 +27,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
     isLoaded = false;
 
     graphData = [];
+
+    isFilterVisible = false;
 
     ngOnInit() {
         this.sub = combineLatest(
@@ -61,6 +63,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
         if (this.sub) {
             this.sub.unsubscribe();
         }
+    }
+
+    //
+    private toggleFilterVisability(dir: boolean) {
+        this.isFilterVisible = dir;
+    }
+
+    //
+    onFilter() {
+        this.toggleFilterVisability(true);
     }
 
 }

@@ -23,6 +23,7 @@ import {EventsComponent} from './history/events/events.component';
 import {SearchPipe} from './shared/pipe/search.pipe';
 import {NotFoundComponent} from '../shared/components/not-found/not-found.component';
 import { DetailComponent } from './history/detail/detail.component';
+import { FilterComponent } from './history/filter/filter.component';
 
 @NgModule({
     declarations: [
@@ -41,7 +42,8 @@ import { DetailComponent } from './history/detail/detail.component';
         EventsComponent,
         SearchPipe,
         NotFoundComponent,
-        DetailComponent
+        DetailComponent,
+        FilterComponent
     ],
     imports: [
         CommonModule,

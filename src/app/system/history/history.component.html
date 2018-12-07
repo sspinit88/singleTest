@@ -4,8 +4,17 @@
     </h3>
 </div>
 <div *ngIf="isLoaded">
+    <button class="btn btn-primary"
+            style="margin-left: 100px; margin-bottom: 50px;"
+            (click)="onFilter()"
+        >
+        Filter
+    </button>
     <app-graph [data]="graphData"></app-graph>
     <app-events [categories]="categories" [events]="events"></app-events>
+    <div *ngIf="isFilterVisible">
+        <app-filter></app-filter>
+    </div>
 </div>
 <div *ngIf="!isLoaded">
     Loading...
